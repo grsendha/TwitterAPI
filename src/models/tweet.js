@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 // Define the tweet schema
 const tweetSchema = new mongoose.Schema(
@@ -21,4 +21,4 @@ const tweetSchema = new mongoose.Schema(
 // Create the Tweet model
 const Tweet = mongoose.model("Tweet", tweetSchema);
 
-module.exports = Tweet;
+export default Tweet;

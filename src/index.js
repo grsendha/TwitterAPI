@@ -1,10 +1,11 @@
-const express = require("express");
-const { PORT } = require("./config/serverConfig");
-const bodyParser = require("body-parser");
-const { connectDB } = require("./database/databaseConnectivity");
-const HashTagRepository = require("./repositories/hashtag-repository");
-const TweetService = require("./services/tweet-service");
-const { DEBUG } = require("./utils/print");
+import express from "express";
+import { PORT } from "./config/serverConfig.js";
+import bodyParser from "body-parser";
+import { connectDB } from "./database/databaseConnectivity.js";
+
+import TweetService from "./services/tweet-service.js";
+import { DEBUG } from "./utils/print.js";
+
 const app = express();
 
 const serverSetup = async () => {
@@ -13,15 +14,9 @@ const serverSetup = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   await connectDB().then(async () => {
-    let repo = new HashTagRepository();
-    // await repo.bulkCreateHashTags([
-    //   { title: "nodejs", tweetId: [] },
-    //   { title: "express", tweetId: [] },
-    //   { title: "mongodb", tweetId: [] },
-    // ]);
     let tweetService = new TweetService();
     const tweet = await tweetService.create({
-      content: "i m using #express",
+      content: "i m using #express and #super",
     });
     DEBUG("tweet is ", tweet);
 

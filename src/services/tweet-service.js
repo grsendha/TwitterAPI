@@ -1,10 +1,12 @@
-const { TweetRepository, HashtagRepository } = require("../repositories/");
-const { DEBUG } = require("../utils/print");
+import { TweetRepository, HashTagRepository } from "../repositories/index.js";
+console.log("TweetRepository", TweetRepository);
+console.log("Hashtag", HashTagRepository);
+import { DEBUG } from "../utils/print.js";
 
 class TweetService {
   constructor() {
     this.tweetRepository = new TweetRepository();
-    this.hashtagRepository = new HashtagRepository();
+    this.hashtagRepository = new HashTagRepository();
   }
 
   /**
@@ -38,8 +40,8 @@ class TweetService {
       newTags
     );
 
-    alreadyPresentTagsResult.forEach(async (tag) => {
-      await tag.tweetId.push(tweet.id);
+    alreadyPresentTagsResult.forEach((tag) => {
+      tag.tweetId.push(tweet.id);
       tag.save();
     });
 
@@ -55,4 +57,4 @@ class TweetService {
   }
 }
 
-module.exports = TweetService;
+export default TweetService;

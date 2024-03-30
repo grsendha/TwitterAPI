@@ -1,4 +1,4 @@
-const Hashtag = require("../models/hashtag");
+import Hashtag from "../models/hashtag.js";
 
 class HashTagRepository {
   constructor() {}
@@ -48,4 +48,4 @@ class HashTagRepository {
   }
 }
 
-module.exports = HashTagRepository;
+export default HashTagRepository;

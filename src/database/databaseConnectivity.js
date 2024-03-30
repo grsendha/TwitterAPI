@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { MONGO_URL } = require("../config/serverConfig");
+import mongoose from "mongoose";
+import { MONGO_URL } from "../config/serverConfig.js";
 
 const connectDB = async () => {
   try {
@@ -16,6 +16,4 @@ const connectDB = async () => {
   return false; // Return false if the connection fails
 };
 
-module.exports = {
-  connectDB,
-};
+export { connectDB };
