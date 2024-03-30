@@ -9,6 +9,35 @@ class TweetService {
     this.hashtagRepository = new HashTagRepository();
   }
 
+  #filterTagWhichIsNotPresent(tags, titleArrayOfPresentTags, tweet) {
+    let newTags = tags.filter((tag) => !titleArrayOfPresentTags.includes(tag));
+    newTags = newTags.map((tag) => {
+      return { title: tag, tweetId: [tweet.id] };
+    });
+    return newTags;
+  }
+
+  async #findingAlreadyPresentTags(tags) {
+    let alreadyPresentTagsResult = await this.hashtagRepository.findByName(
+      tags
+    );
+    console.log("alreadyPresentTagsResult", alreadyPresentTagsResult);
+    const titleArrayOfPresentTags = alreadyPresentTagsResult.map(
+      (tag) => tag.title
+    );
+    return titleArrayOfPresentTags;
+  }
+
+  #filteringHashTag(data) {
+    const content = data.content;
+    const tags = content
+      .match(/#\w+/g)
+      .map((tag) => tag.slice(1))
+      .map((tag) => tag.toLowerCase());
+
+    return tags;
+  }
+
   /**
    * Creates a new tweet.
    *
@@ -17,25 +46,23 @@ class TweetService {
    * @returns {Promise<Object>} - A promise that resolves to the created tweet.
    */
   async create(data) {
-    const content = data.content;
-    const tags = content
-      .match(/#\w+/g)
-      .map((tag) => tag.slice(1))
-      .map((tag) => tag.toLowerCase());
+    const tags = this.#filteringHashTag(data);
     const tweet = await this.tweetRepository.createTweet(data);
-    let alreadyPresentTagsResult = await this.hashtagRepository.findByName(
-      tags
+
+    const titleArrayOfPresentTags = await this.#findingAlreadyPresentTags(tags);
+
+    const newTags = this.#filterTagWhichIsNotPresent(
+      tags,
+      titleArrayOfPresentTags,
+      tweet
     );
-    const titleOfPresentTags = alreadyPresentTagsResult.map((tag) => tag.title);
-    let newTags = tags.filter((tag) => !titleOfPresentTags.includes(tag));
-    newTags = newTags.map((tag) => ({ title: tag, tweetId: [tweet.id] }));
-    const createdTags = await this.hashtagRepository.bulkCreateHashTags(
-      newTags
-    );
-    alreadyPresentTagsResult.forEach((tag) => {
-      tag.tweetId.push(tweet.id);
-      tag.save();
-    });
+
+    await this.hashtagRepository.bulkCreateHashTags(newTags);
+
+    // alreadyPresentTagsResult.forEach((tag) => {
+    //   tag.tweetId.push(tweet.id);
+    //   tag.save();
+    // });
     return tweet;
   }
 
