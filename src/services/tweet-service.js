@@ -25,7 +25,7 @@ class TweetService {
     const titleArrayOfPresentTags = alreadyPresentTagsResult.map(
       (tag) => tag.title
     );
-    return titleArrayOfPresentTags;
+    return { titleArrayOfPresentTags, alreadyPresentTagsResult };
   }
 
   #filteringHashTag(data) {
@@ -36,6 +36,12 @@ class TweetService {
       .map((tag) => tag.toLowerCase());
 
     return tags;
+  }
+  #pushingTweetToTheirHashtag(alreadyPresentTagsResult, tweet) {
+    alreadyPresentTagsResult.forEach((tag) => {
+      tag.tweetId.push(tweet.id);
+      tag.save();
+    });
   }
 
   /**
@@ -48,21 +54,15 @@ class TweetService {
   async create(data) {
     const tags = this.#filteringHashTag(data);
     const tweet = await this.tweetRepository.createTweet(data);
-
-    const titleArrayOfPresentTags = await this.#findingAlreadyPresentTags(tags);
-
+    const { titleArrayOfPresentTags, alreadyPresentTagsResult } =
+      await this.#findingAlreadyPresentTags(tags);
     const newTags = this.#filterTagWhichIsNotPresent(
       tags,
       titleArrayOfPresentTags,
       tweet
     );
-
     await this.hashtagRepository.bulkCreateHashTags(newTags);
-
-    // alreadyPresentTagsResult.forEach((tag) => {
-    //   tag.tweetId.push(tweet.id);
-    //   tag.save();
-    // });
+    this.#pushingTweetToTheirHashtag(alreadyPresentTagsResult, tweet);
     return tweet;
   }
 
