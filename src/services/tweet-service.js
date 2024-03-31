@@ -1,6 +1,5 @@
 import { TweetRepository, HashTagRepository } from "../repositories/index.js";
-console.log("TweetRepository", TweetRepository);
-console.log("Hashtag", HashTagRepository);
+
 import { DEBUG } from "../utils/print.js";
 
 class TweetService {
@@ -21,7 +20,7 @@ class TweetService {
     let alreadyPresentTagsResult = await this.hashtagRepository.findByName(
       tags
     );
-    console.log("alreadyPresentTagsResult", alreadyPresentTagsResult);
+
     const titleArrayOfPresentTags = alreadyPresentTagsResult.map(
       (tag) => tag.title
     );
