@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 // Define the user schema
 const userSchema = new mongoose.Schema(
@@ -19,6 +20,14 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", function (next) {
+  const user = this;
+  const SALT = bcrypt.genSaltSync(9);
+  const encryptedPassword = bcrypt.hashSync(user.password, SALT);
+  user.password = encryptedPassword;
+  next();
+});
 
 // Create the user model
 const User = mongoose.model("User", userSchema);

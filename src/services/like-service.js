@@ -9,7 +9,7 @@ class LikeService {
   async toggleLike(modelId, modelType, userId) {
     if (modelType === "Tweet") {
       var likeable = await this.tweetRepository.find(modelId);
-      console.log("LIKABLE", likeable);
+      // console.log("LIKABLE", likeable);
     } else if (modelType === "Comment") {
     } else {
       throw new Error("Invalid model type");
@@ -19,7 +19,7 @@ class LikeService {
       onModel: modelType,
       likeable: modelId,
     });
-    console.log(exists);
+    // console.log(exists);
 
     if (exists) {
       likeable.likes.pull(exists.id);
