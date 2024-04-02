@@ -8,6 +8,8 @@ import { DEBUG } from "./utils/print.js";
 import apiRoutes from "./routes/index.js";
 import { TweetRepository, UserRepository } from "./repositories/index.js";
 import LikeService from "./services/like-service.js";
+import passport from "passport";
+import { passportAuth } from "./middlewares/jwt-middleware.js";
 
 const app = express();
 
@@ -16,6 +18,8 @@ const serverSetup = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use("/api", apiRoutes);
+  app.use(passport.initialize());
+  passportAuth(passport);
 
   await connectDB().then(async () => {
     const userRepo = new UserRepository();

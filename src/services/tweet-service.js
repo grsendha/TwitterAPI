@@ -29,11 +29,11 @@ class TweetService {
 
   #filteringHashTag(data) {
     const content = data.content;
-    const tags = content
-      .match(/#\w+/g)
-      .map((tag) => tag.slice(1))
-      .map((tag) => tag.toLowerCase());
-
+    const tags =
+      content
+        .match(/#\w+/g)
+        ?.map((tag) => tag.slice(1))
+        ?.map((tag) => tag.toLowerCase()) || [];
     return tags;
   }
   #pushingTweetToTheirHashtag(alreadyPresentTagsResult, tweet) {
@@ -53,15 +53,17 @@ class TweetService {
   async create(data) {
     const tags = this.#filteringHashTag(data);
     const tweet = await this.tweetRepository.createTweet(data);
-    const { titleArrayOfPresentTags, alreadyPresentTagsResult } =
-      await this.#findingAlreadyPresentTags(tags);
-    const newTags = this.#filterTagWhichIsNotPresent(
-      tags,
-      titleArrayOfPresentTags,
-      tweet
-    );
-    await this.hashtagRepository.bulkCreateHashTags(newTags);
-    this.#pushingTweetToTheirHashtag(alreadyPresentTagsResult, tweet);
+    if (tags) {
+      const { titleArrayOfPresentTags, alreadyPresentTagsResult } =
+        await this.#findingAlreadyPresentTags(tags);
+      const newTags = this.#filterTagWhichIsNotPresent(
+        tags,
+        titleArrayOfPresentTags,
+        tweet
+      );
+      await this.hashtagRepository.bulkCreateHashTags(newTags);
+      this.#pushingTweetToTheirHashtag(alreadyPresentTagsResult, tweet);
+    }
     return tweet;
   }
 
